@@ -1,0 +1,75 @@
+[ymin, ymax] = [-.7,2.3]
+
+lbls = [-2,0,5,10,15,20]
+x_ticks = [(i/TR)+tr0_ind for i in lbls]
+lbls = [str(i) for i in lbls]
+nrows = len(node_tcs10['left'])
+fig, ax = plt.subplots(nrows, 3, sharex=True, sharey=True, figsize = (15,15))
+plt.suptitle('Left hemisphere', fontweight='bold')
+    
+for i,n in enumerate(node_tcs10['left']):
+    #fig, ax = plt.figure(i+1,figsize=(10,5))   
+    r = i
+    movieTC_yes = tcs_trial_z[subs,n,:,0] # nsubs * ntimepts
+    movieTC_no  = tcs_trial_z[subs,n,:,1] # nsubs * ntimepts
+    plt.ylim(ymin,ymax)
+    ax[r,0].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_yes,axis=0),stats.sem(movieTC_yes,axis=0,nan_policy='omit'),color = red_rgb,linewidth=2,label ='"Social"')
+    ax[r,0].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_no,axis=0),stats.sem(movieTC_no,axis=0,nan_policy='omit'),color = blue_rgb,linewidth=2,label ='Non-social"')
+    ax[r,0].vlines(tr0_ind,-1,2,color='grey')
+    ax[r,0].hlines(0,0,31,color='grey')
+    
+    #plt.title(f'Node {n+1},COAX"Social"-\nBILL"Non-social"')
+    if r==0:
+        ax[r,0].set_title(f'COAX-BILL')
+    ax[r,0].plot(sig,np.repeat(1.7,len(sig)),color = 'grey',ls = 'None',marker = '*',label ="p<.05unc.")
+    ax[r,0].plot(earliest_pt_coaxbill[n],1.9,color = 'k',ls = 'None',marker = 'v',mfc='k',markersize = 8,label = "earliest p<.05unc.")
+    #if end_diff_coaxbill[n] == 1:
+    #    ax[r,0].plot([29,30],[1.5,1.5],color = 'k',ls = 'None',marker = '^',mfc='k',markersize=8,label ='end-pts. p<.05unc.') # earliest_pt still in the 3-31 range
+    ax[r,0].set_xticks(x_ticks)
+    ax[r,0].set_xticklabels(lbls)
+    ax[r,0].set_ylabel('BOLD\n(a.u.)')
+    if r == nrows-1:
+         ax[r,0].set_xlabel('Time(sec)')
+    
+
+    movieTC_yes = tcs_run_resh_yes_nocoaxbill[:,n,:] # nsubs * ntimepts
+    movieTC_no  = tcs_run_resh_no_nocoaxbill[:,n,:] # nsubs * ntimepts
+    ax[r,1].set_ylim(ymin,ymax)
+    ax[r,1].hlines(0,0,31,color='grey')
+    if r==0:
+       ax[r,1].set_title(f'All except COAX-BILL')
+
+    ax[r,1].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_yes,axis=0),stats.sem(movieTC_yes,axis=0,nan_policy='omit'),color = red_rgb,linewidth=2,label ='"Social"')
+    ax[r,1].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_no,axis=0),stats.sem(movieTC_no,axis=0,nan_policy='omit'),color = blue_rgb,linewidth=2,label ='Non-social"')
+    ax[r,1].vlines(tr0_ind,-1,2,color='grey')
+    ax[r,1].set_xticks(x_ticks)
+    ax[r,1].set_xticklabels(lbls)
+    #sig = np.where(~np.isnan(coefs_all_nocoaxbill[n,:]))[0]    
+    #plt.plot(sig,np.repeat(1.7,len(sig)),color = 'grey',ls = 'None',marker = '*',label ="p<.05unc.")
+    #plt.plot(earliest_pt_all_nocoaxbill[n],1.9,color = 'k',ls = 'None',marker = 'v',mfc='k',markersize = 8,label = "earliest p<.05unc.")
+    #if end_diff_rand[n] == 1:
+    #    plt.plot([29,30],[1.5,1.5],color = 'k',ls = 'None',marker = '^',mfc='k',markersize=8,label ='end-pts. p<.05unc.') # earliest_pt still in the 3-31 range
+    if r == nrows-1:
+         ax[r,1].set_xlabel('Time(sec)')
+    
+    movie_ind = 4
+    movieTC_yes = tcs_run_z[responses[:,movie_ind]==1,n,:,movie_ind] # nsubs * ntimepts
+    movieTC_no  = tcs_run_z[responses[:,movie_ind]==0,n,:,movie_ind] # nsubs * ntimepts
+    ax[r,2].set_ylim(ymin,ymax)
+    ax[r,2].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_yes,axis=0),stats.sem(movieTC_yes,axis=0,nan_policy='omit'),color = red_rgb,linewidth=2,label ='"Social"')
+    ax[r,2].errorbar(range(movieTC_yes.shape[1]),np.nanmean(movieTC_no,axis=0),stats.sem(movieTC_no,axis=0,nan_policy='omit'),color = blue_rgb,linewidth=2,label ='"Non-social"')
+    if r==0:
+       ax[r,2].set_title(f'RAND')
+    ax[r,2].vlines(tr0_ind,-1,2,color='grey')
+    ax[r,2].hlines(0,0,31,color='grey')
+    ax[r,2].set_xticks(x_ticks)
+    ax[r,2].set_xticklabels(lbls)
+    #ax[r,2].text(35,.15*ymax,f'Node ' + str(n+1) + ',\n' + eval(shen268_lbl[str(n+1)][0])["name"].split(';')[0] + ',\nMNI: ' + str(np.round(eval(shen268_lbl[str(n+1)][0])["coords"],2)),ha='left')
+    if r == 0:
+         ax[r,2].legend(bbox_to_anchor=[1.5,2])
+    if r == nrows-1:
+         ax[r,2].set_xlabel('Time(sec)')
+    #sig = np.where(~np.isnan(meanDiff_rand[n,:]))[0]    
+    
+
+#plt.tight_layout()
